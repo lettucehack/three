@@ -1,229 +1,232 @@
+
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>My first three.js app</title>
-		<style>
-			body { margin: 0; }
-		</style>
-	</head>
-	<body>
-		<p id="infotext" style="color:red;
-						text-align:center;
-						position:absolute;
-						top: 50%;
-						width: 100%;
--webkit-user-select: none;
--khtml-user-select: none;
--moz-user-select: none;
--ms-user-select: none;
--o-user-select: none;
-user-select: none;
-						cursor: default;
-						z-index:100;
-						display:block">Click to Start</p>
-		<p id="optionA" onclick="toggleA()" style="color:yellow;
-						text-align:right;
-						position:absolute;
-						top: -15px;
-						width: 100%;
--webkit-user-select: none;
--khtml-user-select: none;
--moz-user-select: none;
--ms-user-select: none;
--o-user-select: none;
-user-select: none;
-						cursor: default;
-						z-index:100;
-						display:block">[light icon]</p>
-		<script src="js/three.js"></script>
-		<script>
-			var framecnt=0;
-			const scene = new THREE.Scene();
-			const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
-			camera.position.set(0.0, 0.0, 10.0);//note by looking in the negative z direction means matching screen x DIRECTION
-			camera.lookAt(0, 0, 0);
-			const renderer = new THREE.WebGLRenderer();
-			//const renderer = new THREE.WebGLRenderer({antialias:true}); //just in case you still need/want it
-			renderer.setSize( window.innerWidth, window.innerHeight );
-			renderer.shadowMap.enabled = true
-			renderer.shadowMap.type = THREE.PCFShadowMap; //PCFSoftShadowMap???
-			document.body.appendChild( renderer.domElement );
+    <head>
+        <meta charset="utf-8">
+            <title>My first three.js app</title>
+            <style>body { margin: 0; }</style>
+    </head>
+    <body>
+        <p id="infotext" style="color:red;
+            text-align:center;
+            position:absolute;
+            top: 50%;
+            width: 100%;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -o-user-select: none;
+            user-select: none;
+            cursor: default;
+            z-index:100;
+            display:block">Click to Start</p>
+        <p id="optionA" onclick="toggleA()" style="color:yellow;
+            text-align:right;
+            position:absolute;
+            top: -15px;
+            width: 100%;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -o-user-select: none;
+            user-select: none;
+            cursor: default;
+            z-index:100;
+            display:block">[light icon]</p>
+        <script src="js/three.js"></script>
+        <script>
+                var framecnt=0;
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+                camera.position.set(0.0, 0.0, 10.0);                            //note by looking in the negative z direction means matching screen x DIRECTION
+                camera.lookAt(0, 0, 0);
+                const renderer = new THREE.WebGLRenderer();
+                //const renderer = new THREE.WebGLRenderer({antialias:true});   //just in case you still need/want it
+                renderer.setSize( window.innerWidth, window.innerHeight );
+                renderer.shadowMap.enabled = true;
+                renderer.shadowMap.type = THREE.PCFShadowMap;                   //PCFSoftShadowMap???
+                document.body.appendChild( renderer.domElement );
+                
+                const texture = new THREE.TextureLoader().load("./images/cubetexture.png");
+                const texd1 = new THREE.TextureLoader().load("./images/d1.png");
+                const texd2 = new THREE.TextureLoader().load("./images/d2.png");
+                const texd3 = new THREE.TextureLoader().load("./images/d3.png");
+                const texd4 = new THREE.TextureLoader().load("./images/d4.png");
+                const texd5 = new THREE.TextureLoader().load("./images/d5.png");
+                const texd6 = new THREE.TextureLoader().load("./images/d6.png");
+
+                //const matball = new THREE.MeshBasicMaterial( { color: 0xffff00 } );	//COLORED unshaded
+                const matball = new THREE.MeshPhongMaterial( { color: 0xaaaa00 } );
+                const mat0 = new THREE.MeshBasicMaterial( { map: texture } );		//TEXTURE MAP unshaded
+                const matd1 = new THREE.MeshBasicMaterial( { map: texd1 } );		//TEXTURE MAP unshaded
+                const matd2 = new THREE.MeshBasicMaterial( { map: texd2 } );		//TEXTURE MAP unshaded
+                const matd3 = new THREE.MeshBasicMaterial( { map: texd3 } );		//TEXTURE MAP unshaded
+                const matd4 = new THREE.MeshBasicMaterial( { map: texd4 } );		//TEXTURE MAP unshaded
+                const matd5 = new THREE.MeshBasicMaterial( { map: texd5 } );		//TEXTURE MAP unshaded
+                const matd6 = new THREE.MeshBasicMaterial( { map: texd6 } );		//TEXTURE MAP unshaded
+                //
+                //meshes
+                //const geobox = new THREE.BoxGeometry( 1, 1, 1 );
+                const geobox = new THREE.BoxBufferGeometry( 1, 1, 1 );//buffered is better if usable = mesh is static?
+                const geoplane = new THREE.PlaneGeometry(15,15);
+                const geosphere = new THREE.SphereGeometry( 0.5, 16, 8);
+
+                //3d object
+                const objcube = new THREE.Mesh( geobox, mat0 );
+                const objd1 = new THREE.Mesh( geoplane, matball );
+                //const objd1 = new THREE.Mesh( geoplane, matd1 );
+                objd1.rotation.x = Math.PI/-2;
+                objd1.position.y = -2;
+                const objball = new THREE.Mesh( geosphere, matball );
+
+                objcube.castShadow=true;
+                objball.castShadow=true;
+                objd1.receiveShadow=true;
+                scene.add( objcube );
+                scene.add( objd1 );
+                scene.add( objball );
+
+                //lights  these aren't all used in the scene for now
+                const LAmb = new THREE.AmbientLight(0x070707, 1.0);
+                const LPar = new THREE.DirectionalLight(0x99FFFF, 1.0);					//parrallel Directional light CAST SHADOWS!
+                const LRef = new THREE.HemisphereLight(0x88BBFF, 0x443322, 0.5);				//reflective light above and below colors
+                const LPnt = new THREE.PointLight(0x999999, intensity = 1, distance = 10);		//CAST SHADOWS! (within radius/distance)
+                const LSpo = new THREE.SpotLight(0xFFFFFF, 1, distance = 8, angle = Math.PI/2); //CAST SHADOW! Spotlight
+
+                LPnt.position.set(-3,5,0);
+                LPnt.castShadow = true;
+                LPnt.shadow.mapSize.width = 512;
+                LPnt.shadow.mapSize.height = 512;
+                LPnt.shadow.camera.near=1.0;
+                LPnt.shadow.camera.far=50;
+                scene.add(LPnt);
+                var LHelper = new THREE.CameraHelper( LPnt.shadow.camera );
+                LHelper.name="LightIcon";
+                scene.add( LHelper );
+
+                //LSpo.castShadow = true;
+                //LSpo.shadow.mapSize.width = 512;
+                //LSpo.shadow.mapSize.height = 512;
+                //LSpo.shadow.camera.near=1;
+                //LSpo.shadow.camera.far=100;
+                //scene.add(LSpo);
+
+                //scene.add(LAmb);
+                //scene.add(LPar);
+                //scene.add(LRef);
+                //scene.add(LSpo);
 
 
-			const texture = new THREE.TextureLoader().load("cubetexture.png");
-			const texd1 = new THREE.TextureLoader().load("d1.png");
-			const texd2 = new THREE.TextureLoader().load("d2.png");
-			const texd3 = new THREE.TextureLoader().load("d3.png");
-			const texd4 = new THREE.TextureLoader().load("d4.png");
-			const texd5 = new THREE.TextureLoader().load("d5.png");
-			const texd6 = new THREE.TextureLoader().load("d6.png");
+                //three.js SOUND or POSITIONAL (SUPPOSEDLY)
+                //attachable sound (sphere)
+		var AUDIOFILE = 0;
+                var SOUND;
+		function preloadAudio()
+		{
+                        //PRIMITIVE JS AUDIO SOUND
+                        //some primitive audio functionality (sanity check)
+                        //const BEEP = new Audio("./media/beep.mp3");
+                        const listener = new THREE.AudioListener();
+                        camera.add(listener);
 
+                        SOUND = new THREE.PositionalAudio(listener);              //POSITIONAL
+                        //const SOUND = new THREE.Audio(listener);                      //NON-POSITIONAL?
 
-			//const matball = new THREE.MeshBasicMaterial( { color: 0xffff00 } );	//COLORED unshaded
-			const matball = new THREE.MeshPhongMaterial( { color: 0xaaaa00 } );
-			const mat0 = new THREE.MeshBasicMaterial( { map: texture } );		//TEXTURE MAP unshaded
-			const matd1 = new THREE.MeshBasicMaterial( { map: texd1 } );		//TEXTURE MAP unshaded
-			const matd2 = new THREE.MeshBasicMaterial( { map: texd2 } );		//TEXTURE MAP unshaded
-			const matd3 = new THREE.MeshBasicMaterial( { map: texd3 } );		//TEXTURE MAP unshaded
-			const matd4 = new THREE.MeshBasicMaterial( { map: texd4 } );		//TEXTURE MAP unshaded
-			const matd5 = new THREE.MeshBasicMaterial( { map: texd5 } );		//TEXTURE MAP unshaded
-			const matd6 = new THREE.MeshBasicMaterial( { map: texd6 } );		//TEXTURE MAP unshaded
+                        var audioLoader = new THREE.AudioLoader();
+                            audioLoader.load('./media/sonarping.ogg', function(buffer){
+                                SOUND.setBuffer( buffer );
+                                SOUND.setRefDistance(camera.position.z/2);//20
+                                SOUND.setLoop(false);
+                                SOUND.setVolume(0.75);//0.95f
+                                //SOUND.play();//                                           THE MAIN THING IS...IT HAS TO HAVE FOCUS TO PLAY/WORK
+                            }
+                        );
+                        objball.add( SOUND );
+                };
 
-			//meshes
-			//const geobox = new THREE.BoxGeometry( 1, 1, 1 );
-			const geobox = new THREE.BoxBufferGeometry( 1, 1, 1 );//buffered is better if usable = mesh is static?
-			const geoplane = new THREE.PlaneGeometry(15,15);
-			const geosphere = new THREE.SphereGeometry( 0.5, 16, 8);
+                //obj "init" values
 
-			//3d object
-			const objcube = new THREE.Mesh( geobox, mat0 );
-			const objd1 = new THREE.Mesh( geoplane, matball );
-			//const objd1 = new THREE.Mesh( geoplane, matd1 );
-			objd1.rotation.x = Math.PI/-2;
-			objd1.position.y = -2;
-			const objball = new THREE.Mesh( geosphere, matball );
+                objd1.position.x=1;
 
-			objcube.castShadow=true;
-			objball.castShadow=true;
-			objd1.receiveShadow=true;
-			scene.add( objcube );
-			scene.add( objd1 );
-			scene.add( objball );
+                window.addEventListener('wheel', function(event){
+                    if (event.deltaY < 0){
+                            camera.position.z -=1.0;
+                    }
+                    else if (event.deltaY > 0){
+                            camera.position.z +=1.0;
+                    }
+                });
 
-			//lights  these aren't all used in the scene for now
-			const LAmb = new THREE.AmbientLight(0x070707, 1.0);
-			const LPar = new THREE.DirectionalLight(0x99FFFF, 1.0);					//parrallel Directional light CAST SHADOWS!
-			const LRef = new THREE.HemisphereLight(0x88BBFF, 0x443322, 0.5);				//reflective light above and below colors
-			const LPnt = new THREE.PointLight(0x999999, intensity = 1, distance = 10);		//CAST SHADOWS! (within radius/distance)
-			const LSpo = new THREE.SpotLight(0xFFFFFF, 1, distance = 8, angle = Math.PI/2); //CAST SHADOW! Spotlight
+                window.addEventListener('resize', function(event){
+                    const theWidth = window.innerWidth;
+                    const theHeight = window.innerHeight;
+                    camera.aspect = theWidth / theHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(theWidth, theHeight);
+                    //setCanvasDimensions(renderer.domElement, theWidth, theHeight);
+                });
 
-			LPnt.position.set(-3,5,0);
-			LPnt.castShadow = true;
-			LPnt.shadow.mapSize.width = 512;
-			LPnt.shadow.mapSize.height = 512;
-			LPnt.shadow.camera.near=1.0;
-			LPnt.shadow.camera.far=50;
-			scene.add(LPnt);
-			var LHelper = new THREE.CameraHelper( LPnt.shadow.camera );
-			LHelper.name="LightIcon";
-			scene.add( LHelper );
+                window.addEventListener('click', function(event){
+                    if (RUNNING!=1) Start3D();
+                });
 
+                window.AudioContext = ( window.AudioContext || window.webkitAudioContext || null);
+                if (!AudioContext){
+                    alert("No Audio Context!");
+                }
 
-			//LSpo.castShadow = true;
-			//LSpo.shadow.mapSize.width = 512;
-			//LSpo.shadow.mapSize.height = 512;
-			//LSpo.shadow.camera.near=1;
-			//LSpo.shadow.camera.far=100;
-			//scene.add(LSpo);
+                var RUNNING = 0;
+                function Start3D(){
+                    preloadAudio();
+                    if (RUNNING!=1) RUNNING=1;
+                    SOUND.play();
+                    document.getElementById("infotext").style.textAlign = "left";
+                    document.getElementById("infotext").style.top = "-15px";
+                    anim();                                                     //start animation
+                };
 
-			//scene.add(LAmb);
-			//scene.add(LPar);
-			//scene.add(LRef);
-			//scene.add(LSpo);
+                function toggleA(){
+                    if (scene.getObjectByName("LightIcon"))
+                    {
+                            foo=scene.getObjectByName("LightIcon");
+                            scene.remove( foo );
+                            document.getElementById("optionA").style.color="#555555";
+                    }
+                    else
+                    {
+                            scene.add(LHelper);
+                            document.getElementById("optionA").style.color="#FFFF00";
+                    }
+                };
 
-			//PRIMITIVE JS AUDIO SOUND
-			//some primitive audio functionality (sanity check)
-			//const BEEP = new Audio("beep.mp3");
-			//three.js SOUND or POSITIONAL (SUPPOSEDLY)
-			//attachable sound (sphere)
-			const listener = new THREE.AudioListener();
-			camera.add(listener);
-			const SOUND = new THREE.PositionalAudio(listener);  //POSITIONAL
-			//const SOUND = new THREE.Audio(listener);  //NON-POSITIONAL?
-			const audioLoader = new THREE.AudioLoader();
-			audioLoader.load('sonarping.ogg', function(buffer){
-				SOUND.setBuffer( buffer );
-				SOUND.setRefDistance(camera.position.z/2);//20
-				SOUND.setLoop(false);
-				SOUND.setVolume(0.75);//0.95f
-				//SOUND.play();//THE MAIN THING IS...IT HAS TO HAVE FOCUS TO PLAY/WORK
-			});
+                function anim() {
+                    objcube.rotation.x += 0.01;
+                    objcube.rotation.y += 0.01;
 
-			//obj "init" values
-			objball.add( SOUND );
-			objd1.position.x=1;
+                    let rad=THREE.MathUtils.degToRad(framecnt);
+                    objball.position.x=Math.cos(rad)*4;
+                    objball.position.z=Math.sin(rad)*4;
+                    //objball.scale.setScalar(ballmesh.scale.x*0.99);
+                    //LPnt.position.y=Math.abs(Math.sin(rad)*5); //altitude
 
-			window.addEventListener('wheel', function(event){
-				if (event.deltaY < 0){
-					camera.position.z -=1.0;
-				}
-				else if (event.deltaY > 0){
-					camera.position.z +=1.0;
-				}
-			});
-
-			window.addEventListener('resize', function(event){
-					const theWidth = window.innerWidth;
-					const theHeight = window.innerHeight;
-					camera.aspect = theWidth / theHeight;
-					camera.updateProjectionMatrix();
-					renderer.setSize(theWidth, theHeight);
-					//setCanvasDimensions(renderer.domElement, theWidth, theHeight);
-			});
-
-			window.addEventListener('click', function(event){
-					if (RUNNING!=1) Start3D();
-			});
-
-			window.AudioContext = ( window.AudioContext || window.webkitAudioContext || null);
-			if (!AudioContext){
-				alert("No Audio Context!");
-			}
-
-			var RUNNING = 0;
-			function Start3D(){
-				if (RUNNING!=1) RUNNING=1;
-				SOUND.play();
-				document.getElementById("infotext").style.textAlign = "left";
-				document.getElementById("infotext").style.top = "-15px";
-
-
-
-				anim();			//start animation
-			}
-
-			function toggleA(){
-				if (scene.getObjectByName("LightIcon"))
-				{
-					foo=scene.getObjectByName("LightIcon");
-					scene.remove( foo );
-					document.getElementById("optionA").style.color="#555555";
-					
-				}
-				else
-				{
-					scene.add(LHelper);
-					document.getElementById("optionA").style.color="#FFFF00";
-				}
-			}
-
-			function anim() {
-				objcube.rotation.x += 0.01;
-				objcube.rotation.y += 0.01;
-
-				let rad=THREE.MathUtils.degToRad(framecnt);
-				objball.position.x=Math.cos(rad)*4;
-				objball.position.z=Math.sin(rad)*4;
-				//objball.scale.setScalar(ballmesh.scale.x*0.99);
-				//LPnt.position.y=Math.abs(Math.sin(rad)*5); //altitude
-
-				renderer.render( scene, camera );
-				framecnt+=1;
-				if(framecnt>3590) framecnt=0;
-				if (RUNNING)
-				{
-					if (framecnt%100==0){
-						SOUND.stop();
-						SOUND.play();
-						objball.scale.setScalar(1);
-					}
-					document.getElementById("infotext").innerHTML = framecnt;
-					requestAnimationFrame(anim);		//recurse anim
-				}
-				//document.getElementById("toptext").style.text-align="center";
-			};
-			anim();//init first animate
-		</script>
-	</body>
+                    renderer.render( scene, camera );
+                    framecnt+=1;
+                    if(framecnt>3590) framecnt=0;
+                    if (RUNNING)
+                    {
+                        if (framecnt%100==0){
+                            SOUND.stop();
+                            SOUND.play();
+                            objball.scale.setScalar(1);
+                        }
+                        document.getElementById("infotext").innerHTML = framecnt;
+                        requestAnimationFrame(anim);                            //recurse anim
+                    }
+                    //document.getElementById("toptext").style.text-align="center";
+                };
+                anim();//init first animate
+        </script>
+        </body>
 </html>
